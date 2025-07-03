@@ -1,6 +1,6 @@
 # Type 2 Fuzz C Means Clustering Algorithm in R
 
-Developing and contributing an implementation of Type-2 Fuzzy C-Means (T2 FCM) algorithm for the R programming language. As a researcher working in the field of fuzzy systems, clustering, and data science, I have observed significant challenges and opportunities in integrating advanced fuzzy methodologies, such as T2 FCM, into widely-used programming environments like R. Below, I would like to present an algorithm for R. 
+Developing and contributing an implementation of Type-2 Fuzzy C-Means (T2 FCM) algorithm for the R programming language. As a researcher working in the field of fuzzy systems, clustering, and data science, I have observed significant challenges and opportunities in integrating advanced fuzzy methodologies, such as T2 FCM, into widely-used programming environments like R. Below, I would like to present an algorithm for R. It is also aimed that the lower and upper bound values obtained as outputs of the algorithm will serve as a resource for advanced type-2 fuzzy decision-making algorithms.
 ## Algorithm
 This section provides a step-by-step guide on how to use the package.
 

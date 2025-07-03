@@ -4,7 +4,7 @@ Developing and contributing an implementation of Type-2 Fuzzy C-Means (T2 FCM) a
 ## Algorithm
 This section provides a step-by-step guide on how to use the package.
 
-Step 1: Loading, cleaning and reading the dataset for analysis (Winsconsin Breast Cancer Data [19])
+## Step 1: Loading, cleaning and reading the dataset for analysis (Winsconsin Breast Cancer Data [19])
 # If data is from an online source as in our example_ Downloading data set (Wisconsin Breast Cancer data) 
 from UCI repository  
 url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data"  
@@ -20,8 +20,8 @@ data[, 2:11] <- lapply(data[, 2:11], function(x) as.numeric(as.character(x)))
 # Remove rows with missing values and ID column  
 data <- na.omit(data)  
 data <- data[, -1]  
-Step 2: Load necessary libraries (install if not already installed)  
 
+## Step 2: Load necessary libraries (install if not already installed)  
 if (!requireNamespace("MASS", quietly = TRUE)) install.packages("MASS")  
 if (!requireNamespace("mlbench", quietly = TRUE)) install.packages("mlbench")  
 if (!requireNamespace("ggplot2", quietly = TRUE)) install.packages("ggplot2")  
@@ -33,7 +33,8 @@ library(ggplot2)
 library(mlbench)  
 library(RColorBrewer)  
 library(gridExtra)  
-Step 3: Custom theme for plots and Function to perform clustering and plot membership degrees
+
+## Step 3: Custom theme for plots and Function to perform clustering and plot membership degrees
 my_theme <- theme_minimal() +  
   theme(  
     plot.title = element_text(size = 12, face = "bold", hjust = 0.5),  
@@ -52,18 +53,18 @@ my_theme <- theme_minimal() +
 fuzzy_clustering <- function(feature_name) {  
   # Select the specific feature (1D data)  
   feature_data <- data[, feature_name, drop = FALSE]  
-Step 4: Initialize parameters and randomly initialize membership matrix U
-
+  
+## Step 4: Initialize parameters and randomly initialize membership matrix U
 # Initialize parameters  
   c <- 2  # Number of clusters  
   m <- c(2, 3)  # Fuzziness parameters  
   epsilon <- 1e-4  # Stopping criterion  
-  
-  # Randomly initialize membership matrix U  
+# Randomly initialize membership matrix U  
   set.seed(123)  
   U <- matrix(runif(nrow(feature_data) * c), nrow = nrow(feature_data), ncol = c)  
   U <- U / rowSums(U)  
-Step 5: Function to update cluster centers  
+
+## Step 5: Function to update cluster centers  
 # Compute left cluster centers  
   update_left_cluster_centers <- function(X, U, m1) {  
     c <- ncol(U)  
@@ -86,7 +87,8 @@ Step 5: Function to update cluster centers
     }  
     return(v_R)  
   }  
-Step 6: Calculate Euclidean distances  
+
+## Step 6: Calculate Euclidean distances  
 
   calculate_distances <- function(X, centers) {  
     dist <- matrix(0, nrow(X), length(centers))  
@@ -97,7 +99,8 @@ Step 6: Calculate Euclidean distances
     }  
     return(dist)  
   }  
-Step 7: Calculating Upper and Lower membership degree functions for each cluster
+
+## Step 7: Calculating Upper and Lower membership degree functions for each cluster
 # Upper membership degree  
   calculate_upper_bar_mu <- function(d_ji, d_ki, c, m1, m2) {  
     ratio_sum <- sum(d_ji / d_ki)  
@@ -110,7 +113,7 @@ Step 7: Calculating Upper and Lower membership degree functions for each cluster
     return(upper_bar_mu_ij)  
   }  
   
-  # Lower membership degree 
+# Lower membership degree 
   calculate_lower_bar_mu <- function(d_ji, d_ki, c, m1, m2) {  
     ratio_sum <- sum(d_ji / d_ki)  
     condition <- 1 / ratio_sum >= 1 / c  
@@ -122,13 +125,14 @@ Step 7: Calculating Upper and Lower membership degree functions for each cluster
     return(lower_bar_mu_ij)  
   }  
 
-Step 8: Compute final cluster centers by averaging left and right values 
+## Step 8: Compute final cluster centers by averaging left and right values 
 
   compute_final_cluster_centers <- function(v_L, v_R) {  
     v <- (v_L + v_R) / 2  
     return(v)  
   }  
-Step 9: Main loop for clustering  
+
+## Step 9: Main loop for clustering  
 
   max_iterations <- 100  
   for (iteration in 1:max_iterations) {  
@@ -136,32 +140,32 @@ Step 9: Main loop for clustering
     v_L <- update_left_cluster_centers(feature_data, U, m[1])  
     v_R <- update_right_cluster_centers(feature_data, U, m[2])  
     
-    # Calculate distances  
-    d_L <- calculate_distances(feature_data, v_L)  
-    d_R <- calculate_distances(feature_data, v_R)  
+  # Calculate distances  
+   d_L <- calculate_distances(feature_data, v_L)  
+   d_R <- calculate_distances(feature_data, v_R)  
     
-    # Update membership degrees  
-    U_left <- matrix(0, nrow = nrow(feature_data), ncol = c)  
-    U_right <- matrix(0, nrow = nrow(feature_data), ncol = c)  
+  # Update membership degrees  
+   U_left <- matrix(0, nrow = nrow(feature_data), ncol = c)  
+   U_right <- matrix(0, nrow = nrow(feature_data), ncol = c)  
     for (i in 1:nrow(feature_data)) {  
       for (j in 1:c) {  
         U_left[i, j] <- calculate_upper_bar_mu(d_L[i, j], d_L[i,], c, m[1], m[2])  
         U_right[i, j] <- calculate_lower_bar_mu(d_R[i, j], d_R[i,], c, m[1], m[2])  
       }  
     }  
-    # Calculate final membership matrix and cluster centers  
-    U_final <- (U_left + U_right) / 2  
-    v_final <- compute_final_cluster_centers(v_L, v_R)  
+  # Calculate final membership matrix and cluster centers  
+   U_final <- (U_left + U_right) / 2  
+   v_final <- compute_final_cluster_centers(v_L, v_R)  
     
-    # Convergence check  
-    if (all(abs(U_final - U) < epsilon)) {  
+  # Convergence check  
+   if (all(abs(U_final - U) < epsilon)) {  
       break  
     } else {  
       U <- U_final  
     }  
   }
 
-Step 10: Plotting clusters 
+## Step 10: Plotting clusters 
 
 # Prepare data for plotting  
   plot_data <- data.frame(  
